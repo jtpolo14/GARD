@@ -1,0 +1,101 @@
+<div class="studio">
+  <div class="header">
+    <h2>{{ mode === 'edit' ? 'Edit Rule' : 'Create Rule' }}</h2>
+    <a routerLink="/rules" class="back-link">&larr; Rules</a>
+  </div>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+
+  <div class="form-grid">
+    <!-- Left: Form fields -->
+    <div class="form-col">
+      <div class="field">
+        <label>Code</label>
+        <input [(ngModel)]="code" placeholder="rule_my_rule_01" [disabled]="mode === 'edit'" />
+      </div>
+
+      <div class="field">
+        <label>Name</label>
+        <input [(ngModel)]="name" placeholder="My Rule Name" />
+      </div>
+
+      <div class="field">
+        <label>Description</label>
+        <textarea [(ngModel)]="description" rows="2" placeholder="What does this rule do?"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Process</label>
+          <select [(ngModel)]="processId">
+            <option [ngValue]="null">Global (no process)</option>
+            <option *ngFor="let p of processes" [ngValue]="p.id">{{ p.name }}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Action</label>
+          <input [(ngModel)]="action" placeholder="require_approval" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Priority</label>
+          <input type="number" [(ngModel)]="priority" min="1" />
+        </div>
+
+        <div class="field">
+          <label>Status</label>
+          <select [(ngModel)]="status">
+            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Condition builder -->
+    <div class="builder-col">
+      <div class="builder-header">
+        <h3>Conditions</h3>
+        <select [(ngModel)]="combinator" class="combinator-select">
+          <option value="and">ALL must match (AND)</option>
+          <option value="or">ANY must match (OR)</option>
+        </select>
+      </div>
+
+      <div class="conditions">
+        <div class="condition-row" *ngFor="let c of conditions; let i = index">
+          <span class="condition-label" *ngIf="i > 0">{{ combinator.toUpperCase() }}</span>
+          <span class="condition-label" *ngIf="i === 0">IF</span>
+          <input [(ngModel)]="c.variable" placeholder="field_name" class="var-input" />
+          <select [(ngModel)]="c.operator" class="op-select">
+            <option *ngFor="let op of operators" [value]="op.value">{{ op.label }}</option>
+          </select>
+          <input [(ngModel)]="c.value" placeholder="value" class="val-input" />
+          <button class="remove-btn" (click)="removeCondition(i)" *ngIf="conditions.length > 1">&times;</button>
+        </div>
+      </div>
+
+      <button class="add-btn" (click)="addCondition()">+ Add Condition</button>
+
+      <!-- Preview -->
+      <div class="preview">
+        <h4>Human-Readable</h4>
+        <div class="preview-text">{{ getHumanReadable() }}</div>
+      </div>
+
+      <div class="preview">
+        <h4>JSON Logic</h4>
+        <pre class="preview-json">{{ buildLogic() | json }}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="save-btn" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Saving...' : (mode === 'edit' ? 'Update Rule' : 'Create Rule') }}
+    </button>
+    <button class="delete-btn" *ngIf="mode === 'edit'" (click)="deleteRule()">Delete</button>
+  </div>
+</div>
