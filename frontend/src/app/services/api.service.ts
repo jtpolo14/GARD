@@ -11,6 +11,8 @@ import {
   DecisionLog,
   DecisionRequest,
   DecisionResponse,
+  SimulationRequest,
+  SimulationResponse,
 } from '../models/api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -68,5 +70,10 @@ export class ApiService {
   // Evaluate Decision
   evaluateDecision(req: DecisionRequest): Observable<DecisionResponse> {
     return this.http.post<DecisionResponse>(`${this.baseUrl}/evaluate-decision`, req);
+  }
+
+  // Simulation
+  runSimulation(req: SimulationRequest): Observable<SimulationResponse> {
+    return this.http.post<SimulationResponse>(`${this.baseUrl}/simulate`, req);
   }
 }

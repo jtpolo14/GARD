@@ -39,6 +39,10 @@ import { ApiService } from '../../services/api.service';
           <span class="count">{{ processCount }}</span>
           <p>Business processes</p>
         </div>
+        <a routerLink="/simulation-lab" class="card">
+          <h3>Simulation Lab</h3>
+          <p>Test rules before deploying</p>
+        </a>
       </div>
     </div>
   `,

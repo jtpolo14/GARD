@@ -28,11 +28,20 @@ def evaluate_decision(req: DecisionRequest, db: Session = Depends(get_db)):
     # 5. Build outcome
     actions = [r["action"] for r in rules_triggered]
     triggered_codes = [r["code"] for r in rules_triggered]
+    reasons = []
+    for r in rules_triggered:
+        if r.get("matched_reasons"):
+            reasons.extend(r["matched_reasons"])
+        elif r.get("description"):
+            reasons.append(f"{r['name']}: {r['description']}")
+        else:
+            reasons.append(r["name"])
 
     outcome = {
         "decision": decision,
         "rules_triggered": triggered_codes,
         "actions": actions,
+        "reasons": reasons,
     }
 
     # 6. Log
@@ -55,5 +64,6 @@ def evaluate_decision(req: DecisionRequest, db: Session = Depends(get_db)):
         decision=decision,
         rules_triggered=triggered_codes,
         actions=actions,
+        reasons=reasons,
         timestamp=log.created_at,
     )

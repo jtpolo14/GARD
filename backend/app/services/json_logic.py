@@ -1,7 +1,7 @@
 """Minimal JSON Logic evaluator.
 
 Supports the subset of http://jsonlogic.com needed by G.A.R.D.:
-var, and, or, not, !, >, >=, <, <=, ==, !=, if, in, starts_with, ends_with, length
+var, and, or, not, !, >, >=, <, <=, ==, !=, if, in, starts_with, not_starts_with, ends_with, not_ends_with, length
 """
 
 from typing import Any
@@ -102,9 +102,17 @@ def json_logic(rule: Any, data: dict | None = None) -> Any:
         a, b = _resolve_args(values, data, 2)
         return str(a).startswith(str(b))
 
+    if op == "not_starts_with":
+        a, b = _resolve_args(values, data, 2)
+        return not str(a).startswith(str(b))
+
     if op == "ends_with":
         a, b = _resolve_args(values, data, 2)
         return str(a).endswith(str(b))
+
+    if op == "not_ends_with":
+        a, b = _resolve_args(values, data, 2)
+        return not str(a).endswith(str(b))
 
     if op == "length":
         a = json_logic(values[0], data)

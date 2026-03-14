@@ -20,6 +20,7 @@ class Rule(Base):
         String(36), ForeignKey("processes.id"), nullable=True
     )
     logic: Mapped[str] = mapped_column(Text, nullable=False)  # JSON Logic expression
+    condition_reasons: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON list of per-condition reasons
     action: Mapped[str] = mapped_column(String(255), nullable=False)
     priority: Mapped[int] = mapped_column(Integer, default=100)
     status: Mapped[str] = mapped_column(String(20), default="active")

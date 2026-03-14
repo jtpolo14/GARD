@@ -3,6 +3,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RulesListComponent } from './components/rules-list/rules-list.component';
 import { RuleStudioComponent } from './components/rule-studio/rule-studio.component';
 import { DecisionLogsComponent } from './components/decision-logs/decision-logs.component';
+import { SimulationLabComponent } from './components/simulation-lab/simulation-lab.component';
 
 export const routes: Routes = [
   { path: '', component: DashboardComponent },
@@ -10,4 +11,5 @@ export const routes: Routes = [
   { path: 'rules/new', component: RuleStudioComponent },
   { path: 'rules/:id/edit', component: RuleStudioComponent },
   { path: 'decision-logs', component: DecisionLogsComponent },
+  { path: 'simulation-lab', component: SimulationLabComponent },
 ];

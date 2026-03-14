@@ -18,6 +18,7 @@ def _rule_to_response(rule: Rule) -> dict:
         "description": rule.description,
         "process_id": rule.process_id,
         "logic": json.loads(rule.logic),
+        "condition_reasons": json.loads(rule.condition_reasons) if rule.condition_reasons else None,
         "action": rule.action,
         "priority": rule.priority,
         "status": rule.status,
@@ -35,9 +36,11 @@ def list_rules(db: Session = Depends(get_db)):
 
 @router.post("", response_model=RuleResponse, status_code=201)
 def create_rule(rule_in: RuleCreate, db: Session = Depends(get_db)):
-    rule = Rule(
-        **{**rule_in.model_dump(exclude={"logic"}), "logic": json.dumps(rule_in.logic)}
-    )
+    dump = rule_in.model_dump(exclude={"logic", "condition_reasons"})
+    dump["logic"] = json.dumps(rule_in.logic)
+    if rule_in.condition_reasons is not None:
+        dump["condition_reasons"] = json.dumps(rule_in.condition_reasons)
+    rule = Rule(**dump)
     db.add(rule)
     db.commit()
     db.refresh(rule)
@@ -60,6 +63,8 @@ def update_rule(rule_id: str, rule_in: RuleUpdate, db: Session = Depends(get_db)
     update_data = rule_in.model_dump(exclude_unset=True)
     if "logic" in update_data:
         update_data["logic"] = json.dumps(update_data["logic"])
+    if "condition_reasons" in update_data:
+        update_data["condition_reasons"] = json.dumps(update_data["condition_reasons"])
     for field, value in update_data.items():
         setattr(rule, field, value)
     db.commit()

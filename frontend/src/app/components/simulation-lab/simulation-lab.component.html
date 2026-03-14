@@ -1,0 +1,82 @@
+<div class="sim-lab">
+  <div class="header">
+    <h2>Simulation Lab</h2>
+    <a routerLink="/" class="back-link">&larr; Dashboard</a>
+  </div>
+  <p class="subtitle">Test rules against sample data before deploying.</p>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+
+  <!-- Scope selection -->
+  <div class="scope-row">
+    <div class="field">
+      <label>Test a specific rule</label>
+      <select [(ngModel)]="selectedRuleId" (change)="prefillFromRule()">
+        <option [ngValue]="null">All active rules</option>
+        <option *ngFor="let r of rules" [ngValue]="r.id">{{ r.code }} — {{ r.name }}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Process scope</label>
+      <select [(ngModel)]="selectedProcess">
+        <option [ngValue]="null">Global only</option>
+        <option *ngFor="let p of processes" [value]="p.name">{{ p.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Test cases -->
+  <h3>Test Cases</h3>
+  <div class="test-case" *ngFor="let tc of testCases; let i = index">
+    <div class="tc-header">
+      <input [(ngModel)]="tc.label" placeholder="Test label" class="label-input" />
+      <button class="remove-btn" (click)="removeTestCase(i)" *ngIf="testCases.length > 1">&times;</button>
+    </div>
+    <div class="tc-body">
+      <div class="field">
+        <label>Input Data (JSON)</label>
+        <textarea [(ngModel)]="tc.dataJson" rows="4" spellcheck="false" class="json-input"></textarea>
+      </div>
+      <div class="field">
+        <label>Expected Decision</label>
+        <input [(ngModel)]="tc.expected_decision" placeholder="e.g. require_approval, no_action" />
+      </div>
+    </div>
+  </div>
+
+  <div class="tc-actions">
+    <button class="add-btn" (click)="addTestCase()">+ Add Test Case</button>
+    <button class="run-btn" (click)="run()" [disabled]="running">
+      {{ running ? 'Running...' : 'Run Simulation' }}
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div class="results" *ngIf="results">
+    <h3>Results</h3>
+    <div class="summary">
+      <span class="total">{{ summary.total }} tests</span>
+      <span class="pass-count">{{ summary.passed }} passed</span>
+      <span class="fail-count" *ngIf="summary.failed > 0">{{ summary.failed }} failed</span>
+    </div>
+
+    <div *ngFor="let r of results" class="result-row" [class.passed]="r.passed" [class.failed]="!r.passed">
+      <div class="result-status">{{ r.passed ? 'PASS' : 'FAIL' }}</div>
+      <div class="result-detail">
+        <strong>{{ r.label }}</strong>
+        <div class="result-meta">
+          <span *ngIf="r.passed">Decision: <code>{{ r.actual_decision }}</code></span>
+          <span *ngIf="!r.passed">
+            Expected: <code>{{ r.expected_decision }}</code> — Got: <code>{{ r.actual_decision }}</code>
+          </span>
+          <span *ngIf="r.rules_triggered.length > 0">
+            Rules: <code *ngFor="let c of r.rules_triggered">{{ c }} </code>
+          </span>
+        </div>
+        <div class="result-reasons" *ngIf="r.reasons && r.reasons.length > 0">
+          <span class="reason" *ngFor="let reason of r.reasons">{{ reason }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

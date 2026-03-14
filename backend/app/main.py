@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import agents, decisions, decision_logs, health, policies, processes, rules
+from app.routers import agents, decisions, decision_logs, health, policies, processes, rules, simulations
 from app.seed import seed
 
 
@@ -33,3 +33,4 @@ app.include_router(rules.router, prefix="/api/v1")
 app.include_router(policies.router, prefix="/api/v1")
 app.include_router(decisions.router, prefix="/api/v1")
 app.include_router(decision_logs.router, prefix="/api/v1")
+app.include_router(simulations.router, prefix="/api/v1")

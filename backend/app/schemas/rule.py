@@ -10,6 +10,7 @@ class RuleBase(BaseModel):
     description: str | None = None
     process_id: str | None = None
     logic: dict[str, Any]
+    condition_reasons: list[str] | None = None
     action: str
     priority: int = 100
     status: str = "active"
@@ -25,6 +26,7 @@ class RuleUpdate(BaseModel):
     description: str | None = None
     process_id: str | None = None
     logic: dict[str, Any] | None = None
+    condition_reasons: list[str] | None = None
     action: str | None = None
     priority: int | None = None
     status: str | None = None

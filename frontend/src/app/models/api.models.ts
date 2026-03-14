@@ -79,10 +79,40 @@ export interface DecisionRequest {
   data: Record<string, any>;
 }
 
+export interface SimulationTestCase {
+  label: string;
+  data: Record<string, any>;
+  expected_decision: string;
+}
+
+export interface SimulationRequest {
+  rule_id?: string | null;
+  process?: string | null;
+  test_cases: SimulationTestCase[];
+}
+
+export interface SimulationTestResult {
+  label: string;
+  data: Record<string, any>;
+  expected_decision: string;
+  actual_decision: string;
+  rules_triggered: string[];
+  reasons: string[];
+  passed: boolean;
+}
+
+export interface SimulationResponse {
+  total: number;
+  passed: number;
+  failed: number;
+  results: SimulationTestResult[];
+}
+
 export interface DecisionResponse {
   decision_id: string;
   decision: string;
   rules_triggered: string[];
   actions: string[];
+  reasons: string[];
   timestamp: string;
 }

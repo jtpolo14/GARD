@@ -15,4 +15,5 @@ class DecisionResponse(BaseModel):
     decision: str
     rules_triggered: list[str]
     actions: list[str]
+    reasons: list[str]
     timestamp: datetime

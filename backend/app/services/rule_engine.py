@@ -8,6 +8,31 @@ from app.models.process import Process
 from app.models.rule import Rule
 
 
+def _get_matched_reasons(
+    logic: dict, data: dict[str, Any], condition_reasons: list[str]
+) -> list[str]:
+    """Evaluate each condition individually and return reasons for those that matched."""
+    if not condition_reasons:
+        return []
+
+    # Extract individual conditions from and/or combinators
+    conditions: list[dict] = []
+    if "and" in logic:
+        conditions = logic["and"]
+    elif "or" in logic:
+        conditions = logic["or"]
+    else:
+        # Single condition
+        conditions = [logic]
+
+    matched = []
+    for i, condition in enumerate(conditions):
+        if i < len(condition_reasons) and condition_reasons[i]:
+            if jsonLogic(condition, data):
+                matched.append(condition_reasons[i])
+    return matched
+
+
 def evaluate_rules(
     db: Session, process_name: str | None, data: dict[str, Any]
 ) -> tuple[list[dict], list[dict], str]:
@@ -38,8 +63,18 @@ def evaluate_rules(
     for rule in rules:
         logic = json.loads(rule.logic)
         result = jsonLogic(logic, data)
+        condition_reasons = json.loads(rule.condition_reasons) if rule.condition_reasons else []
 
-        rule_info = {"code": rule.code, "name": rule.name, "action": rule.action}
+        # Determine which specific conditions matched
+        matched_reasons = _get_matched_reasons(logic, data, condition_reasons)
+
+        rule_info = {
+            "code": rule.code,
+            "name": rule.name,
+            "description": rule.description,
+            "action": rule.action,
+            "matched_reasons": matched_reasons,
+        }
         rules_evaluated.append(rule_info)
 
         if result:
