@@ -362,6 +362,39 @@ THEN require_approval
 
 ---
 
+## Getting Started
+
+### Prerequisites
+
+- Python 3.13+
+- Node.js 20+
+- npm
+
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+source venv/Scripts/activate   # Windows (Git Bash)
+# source venv/bin/activate     # macOS / Linux
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Backend runs at `http://localhost:8000`. API docs at `http://localhost:8000/docs`.
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+ng serve
+```
+
+Frontend runs at `http://localhost:4200`.
+
+---
+
 ## Tech Stack
 
 | Layer         | Technology              |
