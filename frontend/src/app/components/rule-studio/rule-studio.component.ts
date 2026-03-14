@@ -44,6 +44,11 @@ export class RuleStudioComponent implements OnInit {
     { value: '<=', label: 'less than or equal' },
     { value: '==', label: 'equals' },
     { value: '!=', label: 'not equals' },
+    { value: 'starts_with', label: 'starts with' },
+    { value: 'ends_with', label: 'ends with' },
+    { value: 'length_eq', label: 'has length equal to' },
+    { value: 'length_gt', label: 'has length greater than' },
+    { value: 'length_lt', label: 'has length less than' },
   ];
 
   statuses = ['draft', 'testing', 'approved', 'active', 'deprecated'];
@@ -95,9 +100,18 @@ export class RuleStudioComponent implements OnInit {
   }
 
   parseCondition(item: any): Condition {
-    // Format: { ">": [{"var": "field"}, value] }
     const op = Object.keys(item)[0];
     const args = item[op];
+
+    // Detect length conditions: {"==": [{"length": [{"var": "field"}]}, 10]}
+    if (['==', '>', '<'].includes(op) && args[0]?.length) {
+      const variable = args[0].length[0]?.var || '';
+      const value = String(args[1] ?? '');
+      const lengthOp = op === '==' ? 'length_eq' : op === '>' ? 'length_gt' : 'length_lt';
+      return { variable, operator: lengthOp, value };
+    }
+
+    // Standard format: { ">": [{"var": "field"}, value] }
     const variable = args[0]?.var || '';
     const value = String(args[1] ?? '');
     return { variable, operator: op, value };
@@ -116,6 +130,12 @@ export class RuleStudioComponent implements OnInit {
   buildLogic(): any {
     const parts = this.conditions.map(c => {
       const val = isNaN(Number(c.value)) ? c.value : Number(c.value);
+
+      // Length operators compile to nested JSON Logic
+      if (c.operator === 'length_eq') return { '==': [{ length: [{ var: c.variable }] }, val] };
+      if (c.operator === 'length_gt') return { '>': [{ length: [{ var: c.variable }] }, val] };
+      if (c.operator === 'length_lt') return { '<': [{ length: [{ var: c.variable }] }, val] };
+
       return { [c.operator]: [{ var: c.variable }, val] };
     });
     if (parts.length === 1) return parts[0];
